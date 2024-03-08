@@ -1,5 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+//import { StyleSheet, Text, View } from 'react-native';
+import { GluestackUIProvider, Text } from "@gluestack-ui/themed"
+import { config } from "@gluestack-ui/config" // Optional if you want to use default theme
+
 
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,11 +14,13 @@ const Stack = createNativeStackNavigator();
 
 const App: React.FC = () => {
   return (
+    <GluestackUIProvider config={config}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Tabs" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Tabs" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
+    </GluestackUIProvider>
   );
 };
 
