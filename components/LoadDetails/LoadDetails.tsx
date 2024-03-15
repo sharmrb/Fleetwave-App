@@ -24,11 +24,12 @@ const LoadDetails = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('All');
   
   const handleSelectValueChange = (value) => {
     setSelectedStatus(value);
-    const filteredItems = items.filter(item => item.status === selectedStatus); 
+    //const filteredItems = items.filter(item => item.status === selectedStatus); 
+    console.log(selectedStatus);
   };
   const handleSearchSelectChange = (selectedValue: any) => {
     setSearchTerm(String(selectedValue));
@@ -60,6 +61,13 @@ const LoadDetails = () => {
     fetchTopLoads();
   }, []);
 console.log(topLoads)
+const filteredLoads = topLoads.filter(item => {
+  if (selectedStatus === 'All') {
+      return true; // Show all loads if 'All' is selected
+  } else {
+      return item.status === selectedStatus;
+  }
+});
 
   const renderItem = ({ item }: { item: any }) => {
     return (
@@ -106,15 +114,7 @@ console.log(topLoads)
   <InputField placeholder="Search Loads" />
 </Input>
 <Divider my="$0.5" />
-      {/* <GluestackUIProvider config={config}> */}
-      <Button
-        size="sm"
-        variant="solid"
-        action="primary"
-        isDisabled={false}
-        isFocusVisible={false}>
-        <ButtonText>Sort</ButtonText>
-      </Button>
+   
       <Divider my="$0.5" />
       <Heading size="xl" p="$4" pb="$3">
     Assigned Loads
@@ -123,7 +123,7 @@ console.log(topLoads)
      
      
       <FlatList
-    data={topLoads}
+    data={filteredLoads}
     renderItem={( { item }: { item: any } ) => (
       <TouchableOpacity onPress={() => handleItemPress(item)}>
       <Box
