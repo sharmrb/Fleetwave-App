@@ -1,7 +1,7 @@
 
 import React from 'react';
 import {  View, TouchableOpacity, Linking } from 'react-native';
-import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box } from '@gluestack-ui/themed';
+import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box, AddIcon, ButtonIcon } from '@gluestack-ui/themed';
 
 
 
@@ -158,6 +158,13 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
               }}
               keyExtractor={(item, index) => `${item[0]}-${index}`}
           />
+          <Button  size="md"
+                   variant="outline"
+                   action="positive"
+                  onClick={() => onClose()}>
+                     <ButtonText>Add Document</ButtonText>
+                    <ButtonIcon as={AddIcon} />
+                  </Button>
           </ModalBody>
             <ModalFooter>
             {/* <Button

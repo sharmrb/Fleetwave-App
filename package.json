@@ -19,6 +19,7 @@
     "@react-navigation/native-stack": "^6.9.20",
     "dotenv": "^16.4.5",
     "expo": "^50.0.11",
+    "expo-modules-core": "^1.11.12",
     "expo-status-bar": "~1.11.1",
     "nativewind": "^2.0.11",
     "react": "^18.2.0",
@@ -27,7 +28,8 @@
     "react-native-dotenv": "^3.4.11",
     "react-native-reanimated-table": "^0.0.2",
     "react-native-svg": "^14.1.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
