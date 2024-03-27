@@ -82,7 +82,27 @@ const filteredLoads = topLoads.filter(item => {
   };
   return (
     <View>
-      <Select onValueChange={handleSelectValueChange}>
+      
+      <Input
+  variant="outline"
+  size="md"
+  isDisabled={false}
+  isInvalid={false}
+  isReadOnly={false}
+  // onChangeText={handleSearchSelectChange}
+>
+<InputSlot pl="$3">
+    <InputIcon as={SearchIcon} />
+  </InputSlot>
+  <InputField placeholder="Search Loads" />
+</Input>
+
+   
+      <Divider my="$0.5" />
+      <Heading size="xl" p="$4" pb="$3">
+    Assigned Loads
+    </Heading>
+    <Select onValueChange={handleSelectValueChange}>
         <SelectTrigger variant="outline" size="md">
           <SelectInput placeholder="Select status" />
           <SelectIcon >
@@ -100,42 +120,23 @@ const filteredLoads = topLoads.filter(item => {
           </SelectContent>
         </SelectPortal>
       </Select>
-      <Input
-  variant="outline"
-  size="md"
-  isDisabled={false}
-  isInvalid={false}
-  isReadOnly={false}
-  // onChangeText={handleSearchSelectChange}
->
-<InputSlot pl="$3">
-    <InputIcon as={SearchIcon} />
-  </InputSlot>
-  <InputField placeholder="Search Loads" />
-</Input>
-<Divider my="$0.5" />
-   
-      <Divider my="$0.5" />
-      <Heading size="xl" p="$4" pb="$3">
-    Assigned Loads
-    </Heading>
-      <Card size="md"  m="$3">
+      <Card size="md"  m="$4">
      
      
       <FlatList
-    data={filteredLoads}
-    renderItem={( { item }: { item: any } ) => (
-      <TouchableOpacity onPress={() => handleItemPress(item)}>
-      <Box
-        borderBottomWidth="$1"
-        borderColor="$trueGray800"
-        $dark-borderColor="$trueGray100"
-        $base-pl={0}
-        $base-pr={0}
-        $sm-pl="$4"
-        $sm-pr="$5"
-        py="$2"
-      >
+        data={filteredLoads}
+        renderItem={( { item }: { item: any } ) => (
+          <TouchableOpacity onPress={() => handleItemPress(item)}>
+            <Box
+              borderBottomWidth="$1"
+              borderColor="$trueGray800"
+              $dark-borderColor="$trueGray100"
+              $base-pl={0}
+              $base-pr={0}
+              $sm-pl="$4"
+              $sm-pr="$5"
+              py="$2"
+            >
         <HStack space="md" justifyContent="space-between">
          
           <VStack>
