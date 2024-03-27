@@ -1,9 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {  View, TouchableOpacity, Linking } from 'react-native';
 import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box, AddIcon, ButtonIcon } from '@gluestack-ui/themed';
-
-
+import DocumentScanner from 'react-native-document-scanner-plugin';
 
 interface LoadDetailsPopupProps {
   isVisible: boolean;
@@ -30,25 +29,48 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     ['Comments', selectedItem.comments],
   ];
 
+  const [scannedImage, setScannedImage] = useState(null);
+  const scanDocument = async () => {
+    try {
+        const { scannedImages, status } = await DocumentScanner.scanDocument();
+        if (status === 'success' && scannedImages.length > 0) {
+            setScannedImage(scannedImages[0]);
+        } else if (status === 'cancel') {
+            // Handle cancellation
+        } else {
+            // Handle other errors
+        }
+    } catch (error) {
+        console.error('Error scanning document:', error);
+        // Handle error
+    }
+};
+
+const uploadDocument = async () => {
+  try {
+      // Send scannedImage to backend for upload
+      // Make sure to handle file upload in your backend
+      // You can use fetch or axios to make the HTTP request
+      console.log('Uploading document:', scannedImage);
+      // Example fetch request
+      // const response = await fetch('backend-upload-url', {
+      //     method: 'POST',
+      //     body: scannedImage,
+      //     headers: {
+      //         'Content-Type': 'image/jpeg', // Adjust content type as per your requirement
+      //     },
+      // });
+      // const data = await response.json();
+      // Handle response from backend if necessary
+  } catch (error) {
+      console.error('Error uploading document:', error);
+      // Handle error
+  }
+};
+
+
   return (
-    // <Modal
-    //   transparent
-    //   animationType="slide"
-    //   visible={isVisible}
-    //   onRequestClose={() => onClose()}
-    // >
-    //   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //     <View style={{ backgroundColor: 'white', padding: 20 }}>
-    //       <Text>Load Details:</Text>
-    //       <Text>Load Number: {selectedItem.loadNumber}</Text>
-    //       <Text>Pickup Location: {selectedItem.pickupLocation.split(',')[0]}</Text>
-    //       {/* Add more details as needed */}
-    //       <TouchableOpacity onPress={() => onClose()}>
-    //         <Text>Close</Text>
-    //       </TouchableOpacity>
-    //     </View>
-    //   </View>
-    // </Modal>
+
 
     <Modal isOpen={isVisible} onClose={onClose} animationType="slide" size="lg">
         <ModalBackdrop />
@@ -62,49 +84,8 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
             {/* <Text>Hello, I'm a modal!</Text> */}
             <Divider my="$0.5" />
             <ModalBody>
-            <Text>
-              Elevate user interactions with our versatile modals. Seamlessly
-              integrate notifications, forms, and media displays. Make an impact
-              effortlessly.
-              LoadNumber ={selectedItem.loadNumber}
-              
-            </Text>
+          
             
-            {/* <FlatList
-          data={selectedItem}
-          renderItem={( { item }: { item: any } ) => (
-            <Box
-              borderBottomWidth="$1"
-              borderColor="$trueGray800"
-              $dark-borderColor="$trueGray100"
-              $base-pl={0}
-              $base-pr={0}
-              $sm-pl="$4"
-              $sm-pr="$5"
-              py="$2"
-            >
-              <HStack space="md" justifyContent="space-between">
-              <Text
-                    color="$coolGray800"
-                    fontWeight="$bold"
-                    $dark-color="$warmGray100"
-                  >
-                  
-                  </Text>
-                
-                <Text
-                  fontSize="$xs"
-                  color="$coolGray800"
-                  alignSelf="flex-start"
-                  $dark-color="$warmGray100"
-                >
-               
-                </Text>
-              </HStack>
-            </Box>
-          )}
-          keyExtractor={item => item._id || item.id}
-        /> */}
         
          <FlatList
           data={dataToShow}
@@ -161,7 +142,7 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
           <Button  size="md"
                    variant="outline"
                    action="positive"
-                  onClick={() => onClose()}>
+                  onClick={() => uploadDocument()}>
                      <ButtonText>Add Document</ButtonText>
                     <ButtonIcon as={AddIcon} />
                   </Button>
@@ -180,6 +161,7 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
             </Button> */}
             </ModalFooter>
             </ModalContent>
+            
         </Modal>
   );
 };

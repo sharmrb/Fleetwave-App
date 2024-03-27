@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon} from '@gluestack-ui/themed';
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-reanimated-table';
+
 import {
   Button,
   ButtonText,
@@ -166,16 +166,7 @@ const filteredLoads = topLoads.filter(item => {
   />
       </Card>
       
-      {/* <FlatList
-        data={topLoads}
-        renderItem={renderItem}
-        keyExtractor={item => item._id || item.id} // Replace with unique identifier for each load
-        horizontal={false} // Display cards horizontally
-        showsHorizontalScrollIndicator={false} // Hide scroll indicator
-        
-      />
-      </Card>
-       </GluestackUIProvider> */}
+   
  {popupVisible && (
         <LoadDetailsPopup
           isVisible={popupVisible}
@@ -183,7 +174,7 @@ const filteredLoads = topLoads.filter(item => {
           selectedItem={selectedItem}
         />
       )}
-{/* //old cut code here */}
+
 
 
   </View>
