@@ -7,6 +7,8 @@ import { VITE_API_URL, VITE_API_URL_aidf} from '@env'
 
 const Expenses = () => {
 const [Expenses, setExpenses] = useState<Expense[]>([]);
+const [modalVisible, setModalVisible] = useState(false);
+
   useEffect(() => {
     const fetchExpenses = async () => {
       const apiUrl = `${VITE_API_URL}/fuel`;
@@ -15,7 +17,8 @@ const [Expenses, setExpenses] = useState<Expense[]>([]);
       console.log(data1);
       const formattedFuelData = data1.map(item => ({
         ...item,
-        Type: 'Fuel'
+        Type: 'Fuel',
+        DatenoTime:new Date(item.date).toISOString().split('T')[0]
       }));
       console.log(formattedFuelData);
       const apiUrl2= `${VITE_API_URL}/repairs`;
@@ -24,7 +27,8 @@ const [Expenses, setExpenses] = useState<Expense[]>([]);
      console.log(data2);
      const formattedRepairData = data2.map(item => ({
       ...item,
-      Type: 'Repair'
+      Type: 'Repair',
+      DatenoTime:new Date(item.repairDate).toISOString().split('T')[0]
     }));
     console.log(formattedRepairData);
     
@@ -105,6 +109,44 @@ const [Expenses, setExpenses] = useState<Expense[]>([]);
     )}
     keyExtractor={item => item._id || item.id}
   /> */}
+  <FlatList
+  data={Expenses}
+  renderItem={({ item }) => (
+    
+    <Box
+      borderBottomWidth="$1"
+      borderColor="$trueGray800"
+      $dark-borderColor="$trueGray100"
+      $base-pl={0}
+      $base-pr={0}
+      $sm-pl="$4"
+      $sm-pr="$5"
+      py="$2"
+    >
+      <HStack space="md" justifyContent="space-between">
+        <Text
+          color="$coolGray800"
+          fontWeight="$bold"
+          $dark-color="$warmGray100"
+        >
+          Type: {item.Type}
+        </Text>
+        <Text color="$coolGray800" fontWeight="$bold">
+          Cost: ${item.repairCost || item.cost}
+        </Text>
+        <Text
+          fontSize="$xs"
+          color="$coolGray800"
+          alignSelf="flex-start"
+          $dark-color="$warmGray100"
+        >
+          Date: {item.DatenoTime}
+        </Text>
+      </HStack>
+    </Box>
+  )}
+  keyExtractor={item => item._id || item.id}
+/>
     </Card>
     </View>
   );
