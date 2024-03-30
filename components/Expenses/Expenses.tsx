@@ -1,13 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card} from '@gluestack-ui/themed';
+import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input} from '@gluestack-ui/themed';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import { VITE_API_URL, VITE_API_URL_aidf} from '@env'
 
 
 const Expenses = () => {
 const [Expenses, setExpenses] = useState<Expense[]>([]);
-const [modalVisible, setModalVisible] = useState(false);
+const [fuelModalVisible, setFuelModalVisible] = useState(false);
+const [fuelCost, setFuelCost] = useState('');
+const [fuelDate, setFuelDate] = useState('');
+
+const [repairModalVisible, setRepairModalVisible] = useState(false);
+const [repairCost, setRepairCost] = useState('');
+const [repairDate, setRepairDate] = useState('');
+const [repairDetails, setRepairDetails] = useState('');
+
+  const handleFuelSubmit = async () => {
+    // Code to submit fuel expense data
+    setFuelCost('');
+    setFuelDate('');
+    setFuelModalVisible(false);
+  };
+
+  const handleRepairSubmit = async () => {
+    // Code to submit repair expense data
+    setRepairCost('');
+    setRepairDate('');
+    setRepairDetails('');
+    setRepairModalVisible(false);
+  };
+
+
+const handleOpenFuelModal = () => {
+  
+  setFuelModalVisible(true);
+};
+
+const handleOpenRepairModal = () => {
+  
+  setRepairModalVisible(true);
+};
+
+
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -53,7 +88,7 @@ const [modalVisible, setModalVisible] = useState(false);
   return (
     <View>
       <Text>Expenses Component</Text>
-            <Button
+            {/* <Button
         size="md"
         variant="solid"
         action="primary"
@@ -62,7 +97,41 @@ const [modalVisible, setModalVisible] = useState(false);
       >
         <ButtonText>Add Expense </ButtonText>
         <ButtonIcon as={AddIcon} />
+      </Button> */}
+
+{/* <Menu
+        placement="bottom"
+        trigger={({ ...triggerProps }) => (
+          <TouchableOpacity {...triggerProps}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Button>
+                <ButtonText>Add Expense</ButtonText>
+              <ButtonIcon as={AddIcon} />
+              </Button>
+            </View>
+          </TouchableOpacity>
+        )}
+      > */}
+      <Menu
+  placement="top"
+  trigger={({ ...triggerProps }) => {
+    return (
+      <Button {...triggerProps}>
+        <ButtonText>Add Expense</ButtonText>
+        <ButtonIcon as={AddIcon} />
       </Button>
+    )
+  }}
+>
+        <MenuItem onPress={() => handleOpenFuelModal()}>
+          <Text>Add Fuel</Text>
+        </MenuItem>
+        <MenuItem onPress={() => handleOpenRepairModal()}>
+          <Text>Add Repair</Text>
+        </MenuItem>
+      </Menu>
+
+
 
       <Divider my="$0.5" />
 
@@ -148,6 +217,81 @@ const [modalVisible, setModalVisible] = useState(false);
   keyExtractor={item => item._id || item.id}
 />
     </Card>
+
+    <Modal visible={fuelModalVisible} onClose={() => setFuelModalVisible(false)}>
+        <ModalContent>
+          <ModalHeader>
+            <Text>Add Fuel Expense</Text>
+            <TouchableOpacity onPress={() => setFuelModalVisible(false)}>
+              <CloseIcon />
+            </TouchableOpacity>
+          </ModalHeader>
+          <ModalBody>
+            <KeyboardAvoidingView behavior="padding">
+            <Input>
+                <InputField
+                  placeholder="Cost"
+                  value={fuelCost}
+                  onChangeText={(text) => setFuelCost(text)}
+                  keyboardType="numeric"
+                />
+              </Input>
+              <Input>
+                <InputField
+                  placeholder="Date"
+                  value={fuelDate}
+                  onChangeText={(text) => setFuelDate(text)}
+                  // You can use a date picker here for better user experience
+                />
+            </Input>
+              <Button onPress={handleFuelSubmit}>
+                <Text>Submit</Text>
+              </Button>
+            </KeyboardAvoidingView>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Modal visible={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
+        <ModalContent>
+          <ModalHeader>
+            <Text>Add Repair Expense</Text>
+            <TouchableOpacity onPress={() => setRepairModalVisible(false)}>
+              <CloseIcon />
+            </TouchableOpacity>
+          </ModalHeader>
+          <ModalBody>
+            <KeyboardAvoidingView behavior="padding">
+            <Input>
+                <InputField
+                  placeholder="Cost"
+                  value={fuelCost}
+                  onChangeText={(text) => setFuelCost(text)}
+                  keyboardType="numeric"
+                />
+              </Input>
+              <Input>
+                <InputField
+                  placeholder="Date"
+                  value={fuelDate}
+                  onChangeText={(text) => setFuelDate(text)}
+                  // You can use a date picker here for better user experience
+                />
+            </Input>
+            <Input>
+              <InputField
+                placeholder="Repair Details"
+                value={repairDetails}
+                onChangeText={(text) => setRepairDetails(text)}
+              />
+            </Input>
+              <Button onPress={handleRepairSubmit}>
+                <Text>Submit</Text>
+              </Button>
+            </KeyboardAvoidingView>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </View>
   );
 };
