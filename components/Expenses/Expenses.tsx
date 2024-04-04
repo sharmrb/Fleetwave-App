@@ -87,17 +87,8 @@ const handleOpenRepairModal = () => {
   const allexpenses= Expenses;
   return (
     <View>
-      <Text>Expenses Component</Text>
-            {/* <Button
-        size="md"
-        variant="solid"
-        action="primary"
-        isDisabled={false}
-        isFocusVisible={false}
-      >
-        <ButtonText>Add Expense </ButtonText>
-        <ButtonIcon as={AddIcon} />
-      </Button> */}
+    
+
 
 {/* <Menu
         placement="bottom"
@@ -218,7 +209,8 @@ const handleOpenRepairModal = () => {
 />
     </Card>
 
-    <Modal visible={fuelModalVisible} onClose={() => setFuelModalVisible(false)}>
+    <Modal isOpen={fuelModalVisible} onClose={() => setFuelModalVisible(false)}>
+      <Card>
         <ModalContent>
           <ModalHeader>
             <Text>Add Fuel Expense</Text>
@@ -250,9 +242,10 @@ const handleOpenRepairModal = () => {
             </KeyboardAvoidingView>
           </ModalBody>
         </ModalContent>
+        </Card>
       </Modal>
 
-      <Modal visible={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
+      <Modal isOpen={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
         <ModalContent>
           <ModalHeader>
             <Text>Add Repair Expense</Text>
