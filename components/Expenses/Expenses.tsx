@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input} from '@gluestack-ui/themed';
+import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input, MenuItemLabel} from '@gluestack-ui/themed';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import { VITE_API_URL, VITE_API_URL_aidf} from '@env'
 import { config } from '@gluestack-ui/config';
@@ -115,12 +115,14 @@ const handleOpenRepairModal = () => {
       </Button>
     )
   }}
->
-        <MenuItem onPress={() => handleOpenFuelModal()}>
+      >
+        <MenuItem textValue='Add Fuel' onPress={() => handleOpenFuelModal()}>
+         <MenuItemLabel>Add Fuel</MenuItemLabel>
           <Text>Add Fuel</Text>
         </MenuItem>
-        <MenuItem onPress={() => handleOpenRepairModal()}>
-          <Text>Add Repair</Text>
+        <MenuItem textValue="Add Repair" onPress={() => handleOpenRepairModal()}>
+        <MenuItemLabel>Add Repair</MenuItemLabel>
+        <Text>Add Repair</Text>
         </MenuItem>
       </Menu>
 
