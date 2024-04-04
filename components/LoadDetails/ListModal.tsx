@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
 import {  View, TouchableOpacity, Linking } from 'react-native';
-import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box, AddIcon, ButtonIcon } from '@gluestack-ui/themed';
+import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box, AddIcon, ButtonIcon, GluestackUIProvider } from '@gluestack-ui/themed';
 import DocumentScanner from 'react-native-document-scanner-plugin';
+import { config } from '@gluestack-ui/config';
 
 interface LoadDetailsPopupProps {
   isVisible: boolean;
@@ -70,9 +71,9 @@ const uploadDocument = async () => {
 
 
   return (
+<GluestackUIProvider config={config}>
 
-
-    <Modal isOpen={isVisible} onClose={onClose} animationType="slide" size="lg">
+    <Modal isOpen={isVisible} onClose={onClose}  size="lg">
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
@@ -163,6 +164,7 @@ const uploadDocument = async () => {
             </ModalContent>
             
         </Modal>
+        </GluestackUIProvider>
   );
 };
 

@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-
 import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input} from '@gluestack-ui/themed';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import { VITE_API_URL, VITE_API_URL_aidf} from '@env'
+import { config } from '@gluestack-ui/config';
 
 
 const Expenses = () => {
@@ -86,6 +87,7 @@ const handleOpenRepairModal = () => {
 
   const allexpenses= Expenses;
   return (
+    <GluestackUIProvider config={config}>
     <View>
     
 
@@ -286,6 +288,7 @@ const handleOpenRepairModal = () => {
         </ModalContent>
       </Modal>
     </View>
+    </GluestackUIProvider>
   );
 };
 

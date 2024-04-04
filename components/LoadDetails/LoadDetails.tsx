@@ -81,6 +81,7 @@ const filteredLoads = topLoads.filter(item => {
     );
   };
   return (
+    <GluestackUIProvider config={config}>
     <View>
       
       <Input
@@ -179,6 +180,7 @@ const filteredLoads = topLoads.filter(item => {
 
 
   </View>
+  </GluestackUIProvider>
   );
 };
 
