@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon} from '@gluestack-ui/themed';
+import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon} from '@gluestack-ui/themed';
 
 import {
   Button,
@@ -17,7 +17,7 @@ import LoadDetailsPopup from './ListModal';
 
 
 const LoadDetails = () => {
-  
+  const [isLoading, setIsLoading] = useState(false);
   const [topLoads, setTopLoads] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -47,6 +47,7 @@ const LoadDetails = () => {
   
   useEffect(() => {
     const fetchTopLoads = async () => {
+      setIsLoading(true);
       const apiUrl = `${VITE_API_URL}/loadDetails`;
       const response = await fetch(apiUrl);
       const data = await response.json();
@@ -56,6 +57,7 @@ const LoadDetails = () => {
 
       // Take the top 3 loads
       setTopLoads(data.slice(0, 12));
+      setIsLoading(false);
     };
 
     fetchTopLoads();
@@ -83,7 +85,7 @@ const filteredLoads = topLoads.filter(item => {
   return (
     <GluestackUIProvider config={config}>
     <View>
-      
+    
       <Input
   variant="outline"
   size="md"
@@ -122,7 +124,9 @@ const filteredLoads = topLoads.filter(item => {
         </SelectPortal>
       </Select>
       <Card size="md"  m="$4">
-     
+      {isLoading ? (
+            <Spinner size="large" color="$indigo600" /> // Show spinner when loading
+          ) : (
      
       <FlatList
         data={filteredLoads}
@@ -166,6 +170,7 @@ const filteredLoads = topLoads.filter(item => {
     )}
     keyExtractor={item => item._id || item.id}
   />
+  )}
       </Card>
       
    

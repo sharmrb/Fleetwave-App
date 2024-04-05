@@ -3,6 +3,7 @@ import {  TextInput, TouchableOpacity, View } from "react-native";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Text, Button, ButtonText, FormControl, Heading, Input, InputField, InputSlot, VStack, EyeIcon, EyeOffIcon, InputIcon, GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";
+
  
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -36,6 +37,7 @@ export default function SignInScreen() {
   };
   return (
     <GluestackUIProvider config={config}>   
+    
     <View>
     <FormControl
     p="$4"
@@ -87,27 +89,6 @@ export default function SignInScreen() {
   
 
     
-      <View>
-        <TextInput
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Email..."
-          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-        />
-      </View>
- 
-      <View>
-        <TextInput
-          value={password}
-          placeholder="Password..."
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-      </View>
- 
-      <TouchableOpacity onPress={onSignInPress}>
-        <Text>Sign in</Text>
-      </TouchableOpacity>
     </View>
     </GluestackUIProvider>
   );

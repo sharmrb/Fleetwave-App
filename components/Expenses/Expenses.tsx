@@ -1,42 +1,145 @@
 import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input, MenuItemLabel} from '@gluestack-ui/themed';
+import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, Button, ButtonText,Spinner, ButtonIcon, AddIcon, Card, Menu, MenuItem, Input, MenuItemLabel, FormControl, CalendarDaysIcon, InfoIcon} from '@gluestack-ui/themed';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import { VITE_API_URL, VITE_API_URL_aidf} from '@env'
 import { config } from '@gluestack-ui/config';
+import { useAuth } from '@clerk/clerk-expo';
 
+interface Fuel {
+  _id: string;
+  cost: string;
+  truckObject: string;
+  date: string;
+  comments: string;
+}
 
+interface Repair {
+  _id: string;
+  repair: string;
+  truckObject: string;
+  trailerObject: string;
+  repairDate: string;
+  repairCost: string;
+  repairComments: string;
+}
+
+const SignOut = () => {
+  const { isLoaded,signOut } = useAuth();
+  if (!isLoaded) {
+    return null;
+  }
+
+};
 const Expenses = () => {
+  const [trucks, setTrucks] = useState<Object[]>([]);
 const [Expenses, setExpenses] = useState<Expense[]>([]);
 const [fuelModalVisible, setFuelModalVisible] = useState(false);
-const [fuelCost, setFuelCost] = useState('');
-const [fuelDate, setFuelDate] = useState('');
+
 
 const [repairModalVisible, setRepairModalVisible] = useState(false);
-const [repairCost, setRepairCost] = useState('');
-const [repairDate, setRepairDate] = useState('');
-const [repairDetails, setRepairDetails] = useState('');
 
-  const handleFuelSubmit = async () => {
-    // Code to submit fuel expense data
-    setFuelCost('');
-    setFuelDate('');
+const [isLoading, setIsLoading] = useState(false);
+const [fuelData, setFuelData] = useState<Fuel>({
+  _id: '',
+  cost: '',
+  truckObject: '',
+  date: '',
+  comments: '',
+});
+const [repairData, setRepairData] = useState<Repair>({
+  _id: '',
+  repair: '',
+  repairCost: '',
+  truckObject: '',
+  trailerObject: '',
+  repairDate: '',
+  repairComments: '',
+});
+const handleFuelSubmit = async () => {
+ // Parse the user-entered date string (assuming it's in MM/DD/YYYY format)
+ const userEnteredDateParts = fuelData.date.split('/');
+ const month = parseInt(userEnteredDateParts[0]);
+ const day = parseInt(userEnteredDateParts[1]);
+ const year = parseInt(userEnteredDateParts[2]);
+ const userEnteredDate = new Date(year, month - 1, day);
+
+ // Check if the parsed date is valid
+ if (isNaN(userEnteredDate.getTime())) {
+   console.error('Invalid date format:', fuelData.date);
+   return;
+ }
+
+ // Format the date into the desired format (YYYY-MM-DD)
+ const formattedDate = `${userEnteredDate.getFullYear()}-${String(userEnteredDate.getMonth() + 1).padStart(2, '0')}-${String(userEnteredDate.getDate()).padStart(2, '0')}T13:00:00.000Z`;
+  // Format the date into the desired format (YYYY-MM-DD)
+  try {
+    const response = await fetch(`${VITE_API_URL}/fuel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...fuelData, date: formattedDate }), 
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add fuel expense');
+    }
+fetchExpenses();
+    setFuelData({  _id: '',
+    cost: '',
+    truckObject: '',
+    date: '',
+    comments: '' });
     setFuelModalVisible(false);
-  };
-
-  const handleRepairSubmit = async () => {
-    // Code to submit repair expense data
-    setRepairCost('');
-    setRepairDate('');
-    setRepairDetails('');
-    setRepairModalVisible(false);
-  };
-
-
-const handleOpenFuelModal = () => {
-  
-  setFuelModalVisible(true);
+  } catch (error) {
+    console.error('Error adding fuel expense:', error);
+  }
 };
+
+const handleRepairSubmit = async () => {
+  try {
+    const response = await fetch(`${VITE_API_URL}/repairs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(repairData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add repair expense');
+    }
+
+    setRepairData({   _id: '',
+    repair: '',
+    repairCost: '',
+    truckObject: '',
+    trailerObject: '',
+    repairDate: '',
+    repairComments: '',});
+    setRepairModalVisible(false);
+  } catch (error) {
+    console.error('Error adding repair expense:', error);
+  }
+};
+  const fetchTrucks = async () => {
+    console.log('fetching trucks');
+    try {
+      const truckListResponse = await fetch(`${VITE_API_URL}/truckDetails`);
+      const truckListData = await truckListResponse.json();
+
+      if (truckListData) {
+        setTrucks(truckListData);
+        
+      }
+    } catch (error) {}
+   
+  };
+
+  const handleOpenFuelModal = () => {
+    setFuelModalVisible(true);
+  };
 
 const handleOpenRepairModal = () => {
   
@@ -44,53 +147,57 @@ const handleOpenRepairModal = () => {
 };
 
 
+const fetchExpenses = async () => {
+  setIsLoading(true);
+  const apiUrl = `${VITE_API_URL}/fuel`;
+  const response = await fetch(apiUrl);
+  const data1 = await response.json();
+  console.log(data1);
+  const formattedFuelData = data1.map(item => ({
+    ...item,
+    Type: 'Fuel',
+    DatenoTime: new Date(item.date).toISOString().split('T')[0]
+  }));
+  console.log(formattedFuelData);
 
+  const apiUrl2 = `${VITE_API_URL}/repairs`;
+  const response2 = await fetch(apiUrl2);
+  const data2 = await response2.json();
+  console.log(data2);
+  const formattedRepairData = data2.map(item => ({
+    ...item,
+    Type: 'Repair',
+    DatenoTime: new Date(item.repairDate).toISOString().split('T')[0]
+  }));
+  console.log(formattedRepairData);
+
+  const allExpenses = [...formattedFuelData, ...formattedRepairData];
+  console.log(allExpenses);
+  allExpenses.sort((a, b) => {
+    // Extract the date values, considering both 'date' and 'repairDate' properties
+    const dateA = new Date(a.repairDate || a.date);
+    const dateB = new Date(b.repairDate || b.date);
+
+    // Sort by date in descending order
+    return dateB - dateA;
+  });
+  console.log(allExpenses);
+  setIsLoading(false);
+  setExpenses(allExpenses);
+};
   useEffect(() => {
-    const fetchExpenses = async () => {
-      const apiUrl = `${VITE_API_URL}/fuel`;
-      const response = await fetch(apiUrl);
-      const data1 = await response.json();
-      console.log(data1);
-      const formattedFuelData = data1.map(item => ({
-        ...item,
-        Type: 'Fuel',
-        DatenoTime:new Date(item.date).toISOString().split('T')[0]
-      }));
-      console.log(formattedFuelData);
-      const apiUrl2= `${VITE_API_URL}/repairs`;
-      const response2 = await fetch(apiUrl2);
-      const data2 = await response2.json();
-     console.log(data2);
-     const formattedRepairData = data2.map(item => ({
-      ...item,
-      Type: 'Repair',
-      DatenoTime:new Date(item.repairDate).toISOString().split('T')[0]
-    }));
-    console.log(formattedRepairData);
-    
-      const allExpenses = [...formattedFuelData, ...formattedRepairData];
-     console.log(allExpenses);
-      allExpenses.sort((a, b) => {
-        // Extract the date values, considering both 'date' and 'repairDate' properties
-        const dateA = new Date(a.repairDate || a.date);
-        const dateB = new Date(b.repairDate || b.date);
-      
-        // Sort by date in descending order
-        return dateB - dateA;
-      });
-      console.log(allExpenses);
-      setExpenses(allExpenses);
-    };
+  
+   
  
     fetchExpenses();
+    fetchTrucks();
   }, []);
 
   const allexpenses= Expenses;
   return (
     <GluestackUIProvider config={config}>
     <View>
-    
-
+    {/* <Button  onPress={SignOut}><ButtonText>SignOut</ButtonText></Button> */}
 
 {/* <Menu
         placement="bottom"
@@ -106,7 +213,8 @@ const handleOpenRepairModal = () => {
         )}
       > */}
       <Menu
-  placement="top"
+  placement="bottom"
+  defaultIsOpen={false}
   trigger={({ ...triggerProps }) => {
     return (
       <Button {...triggerProps}>
@@ -118,11 +226,11 @@ const handleOpenRepairModal = () => {
       >
         <MenuItem textValue='Add Fuel' onPress={() => handleOpenFuelModal()}>
          <MenuItemLabel>Add Fuel</MenuItemLabel>
-          <Text>Add Fuel</Text>
+          
         </MenuItem>
         <MenuItem textValue="Add Repair" onPress={() => handleOpenRepairModal()}>
         <MenuItemLabel>Add Repair</MenuItemLabel>
-        <Text>Add Repair</Text>
+        
         </MenuItem>
       </Menu>
 
@@ -131,48 +239,10 @@ const handleOpenRepairModal = () => {
       <Divider my="$0.5" />
 
     <Card size="md" m="$3">
-    {/* <FlatList
-        data={Expenses}
-        renderItem={( { item }: { item: any } ) => (
-          
-          <Box
-            borderBottomWidth="$1"
-            borderColor="$trueGray800"
-            $dark-borderColor="$trueGray100"
-            $base-pl={0}
-            $base-pr={0}
-            $sm-pl="$4"
-            $sm-pr="$5"
-            py="$2"
-          >
-        <HStack space="md" justifyContent="space-between">
-         
-          <VStack>
-            <Text
-              color="$coolGray800"
-              fontWeight="$bold"
-              $dark-color="$warmGray100"
-            >
-             Expense Type: {item.loadNumber}
-            </Text>
-            <Text color="$coolGray600" $dark-color="$warmGray200">
-             Pickup Location- {item.pickupLocation.split(',')[0].split(',')[0]}
-            </Text>
-          </VStack>
-          <Text
-            fontSize="$xs"
-            color="$coolGray800"
-            alignSelf="flex-start"
-            $dark-color="$warmGray100"
-          >
-            {item.deliveryTime.split('T')[0]}
-          </Text>
-        </HStack>
-      </Box>
-     
-    )}
-    keyExtractor={item => item._id || item.id}
-  /> */}
+  
+  {isLoading ? (
+            <Spinner size="large" color="$indigo600" /> // Show spinner when loading
+          ) : (
   <FlatList
   data={Expenses}
   renderItem={({ item }) => (
@@ -211,80 +281,166 @@ const handleOpenRepairModal = () => {
   )}
   keyExtractor={item => item._id || item.id}
 />
+)}
     </Card>
-
-    <Modal isOpen={fuelModalVisible} onClose={() => setFuelModalVisible(false)}>
-      <Card>
+    
+    <Modal isOpen={fuelModalVisible} onClose={() => setFuelModalVisible(false)} size="lg">
+    
+    <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <Text>Add Fuel Expense</Text>
-            <TouchableOpacity onPress={() => setFuelModalVisible(false)}>
-              <CloseIcon />
-            </TouchableOpacity>
-          </ModalHeader>
-          <ModalBody>
-            <KeyboardAvoidingView behavior="padding">
-            <Input>
-                <InputField
-                  placeholder="Cost"
-                  value={fuelCost}
-                  onChangeText={(text) => setFuelCost(text)}
-                  keyboardType="numeric"
-                />
-              </Input>
-              <Input>
-                <InputField
-                  placeholder="Date"
-                  value={fuelDate}
-                  onChangeText={(text) => setFuelDate(text)}
-                  // You can use a date picker here for better user experience
-                />
-            </Input>
-              <Button onPress={handleFuelSubmit}>
-                <Text>Submit</Text>
-              </Button>
-            </KeyboardAvoidingView>
-          </ModalBody>
-        </ModalContent>
-        </Card>
-      </Modal>
-
-      <Modal isOpen={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
-        <ModalContent>
-          <ModalHeader>
-            <Text>Add Repair Expense</Text>
+          <Heading color="$text900" lineHeight="$md">
+          Add Fuel Expense
+        </Heading>
             <TouchableOpacity onPress={() => setRepairModalVisible(false)}>
               <CloseIcon />
             </TouchableOpacity>
           </ModalHeader>
           <ModalBody>
             <KeyboardAvoidingView behavior="padding">
-            <Input>
-                <InputField
-                  placeholder="Cost"
-                  value={fuelCost}
-                  onChangeText={(text) => setFuelCost(text)}
-                  keyboardType="numeric"
-                />
-              </Input>
-              <Input>
-                <InputField
-                  placeholder="Date"
-                  value={fuelDate}
-                  onChangeText={(text) => setFuelDate(text)}
-                  // You can use a date picker here for better user experience
-                />
-            </Input>
-            <Input>
-              <InputField
-                placeholder="Repair Details"
-                value={repairDetails}
-                onChangeText={(text) => setRepairDetails(text)}
-              />
-            </Input>
-              <Button onPress={handleRepairSubmit}>
-                <Text>Submit</Text>
-              </Button>
+            <FormControl
+      p="$4"
+      
+    >
+      <VStack space="xl">
+        
+        <VStack space="xs">
+          
+          <Input>
+          <InputSlot pl="$3">
+    <InputIcon as={InfoIcon} />
+  </InputSlot>
+            <InputField type="text" placeholder='Fuel Cost'
+            value={fuelData.cost}
+            onChangeText={(text) => setFuelData({ ...fuelData, cost: text })}/>
+          </Input>
+        </VStack>
+       
+        <VStack space="xs">
+          
+                <Select
+                 value={fuelData.truckObject} // Set the value of the selected truck
+                 onValueChange={(value) => setFuelData({ ...fuelData, truckObject: value })} >
+          <SelectTrigger variant="outline" size="md">
+            <SelectInput placeholder="Select Truck" />
+            <SelectIcon mr="$3">
+              <Icon as={ChevronDownIcon} />
+            </SelectIcon>
+          </SelectTrigger>
+          <SelectPortal>
+            <SelectBackdrop />
+            <SelectContent>
+            {trucks.map(truck => {
+        
+          return (
+            <SelectItem
+          key={truck._id}
+          label={truck.truckNumber}
+          value={truck.truckNumber} // Use truck._id as value
+           // Update fuelData with truck._id
+        />
+          );
+        })}
+            </SelectContent>
+          </SelectPortal>
+        </Select>
+        </VStack>
+        <VStack space="xs">
+          
+          <Input>
+          <InputSlot pl="$3">
+    <InputIcon as={CalendarDaysIcon} />
+  </InputSlot>
+            <InputField type="text" placeholder='Date (MM/DD/YYYY) Format'
+            onChangeText={(text) => setFuelData({ ...fuelData, date: text })}/>
+          </Input>
+        </VStack>
+        <Button
+          onPress={handleFuelSubmit}
+        >
+          <ButtonText color="$white">Save</ButtonText>
+        </Button>
+      </VStack>
+    </FormControl>
+            </KeyboardAvoidingView>
+          </ModalBody>
+        </ModalContent>
+        
+      </Modal>
+      
+
+      <Modal isOpen={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
+      <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+          <Heading color="$text900" lineHeight="$md">
+          Add Repair Expense
+        </Heading>
+            <TouchableOpacity onPress={() => setRepairModalVisible(false)}>
+              <CloseIcon />
+            </TouchableOpacity>
+          </ModalHeader>
+          <ModalBody>
+            <KeyboardAvoidingView behavior="padding">
+            <FormControl
+      p="$4"
+      
+    >
+      <VStack space="xl">
+        
+        <VStack space="xs">
+          
+          <Input>
+          <InputSlot pl="$3">
+    <InputIcon as={InfoIcon} />
+  </InputSlot>
+            <InputField type="text" placeholder='Repair Name'/>
+          </Input>
+        </VStack>
+        <VStack space="xs">
+          
+          <Input>
+            <InputField type="text" placeholder='Repair cost'/>
+          </Input>
+        </VStack>
+        <VStack space="xs">
+          
+          <Select>
+    <SelectTrigger variant="outline" size="md">
+      <SelectInput placeholder="Select Truck" />
+      <SelectIcon mr="$3">
+        <Icon as={ChevronDownIcon} />
+      </SelectIcon>
+    </SelectTrigger>
+    <SelectPortal>
+      <SelectBackdrop />
+      <SelectContent>
+      {trucks.map(truck => {
+    
+    return (
+      <SelectItem key={truck._id} label={truck.truckNumber} value={truck.truckNumber} />
+    );
+  })}
+      </SelectContent>
+    </SelectPortal>
+  </Select>
+  </VStack>
+        <VStack space="xs">
+          
+          <Input>
+          <InputSlot pl="$3">
+    <InputIcon as={CalendarDaysIcon} />
+  </InputSlot>
+            <InputField type="text" placeholder='Date (MM/DD/YYYY) Format'/>
+          </Input>
+        </VStack>
+        <Button
+          onPress={handleRepairSubmit}
+        >
+          <ButtonText color="$white">Save</ButtonText>
+        </Button>
+      </VStack>
+    </FormControl>
             </KeyboardAvoidingView>
           </ModalBody>
         </ModalContent>
@@ -301,7 +457,47 @@ export default Expenses;
 
 
 
-
+//------------------
+{/* <Modal isOpen={repairModalVisible} onClose={() => setRepairModalVisible(false)}>
+<ModalContent>
+  <ModalHeader>
+    <Text>Add Repair Expense</Text>
+    <TouchableOpacity onPress={() => setRepairModalVisible(false)}>
+      <CloseIcon />
+    </TouchableOpacity>
+  </ModalHeader>
+  <ModalBody>
+    <KeyboardAvoidingView behavior="padding">
+    <Input>
+        <InputField
+          placeholder="Cost"
+          value={fuelCost}
+          onChangeText={(text) => setFuelCost(text)}
+          keyboardType="numeric"
+        />
+      </Input>
+      <Input>
+        <InputField
+          placeholder="Date"
+          value={fuelDate}
+          onChangeText={(text) => setFuelDate(text)}
+          // You can use a date picker here for better user experience
+        />
+    </Input>
+    <Input>
+      <InputField
+        placeholder="Repair Details"
+        value={repairDetails}
+        onChangeText={(text) => setRepairDetails(text)}
+      />
+    </Input>
+      <Button onPress={handleRepairSubmit}>
+        <Text>Submit</Text>
+      </Button>
+    </KeyboardAvoidingView>
+  </ModalBody>
+</ModalContent>
+</Modal> */}
 
 
 
