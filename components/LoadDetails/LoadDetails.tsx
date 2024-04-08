@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon} from '@gluestack-ui/themed';
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-reanimated-table';
+import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, ScrollView, SafeAreaView} from '@gluestack-ui/themed';
+
 import {
   Button,
   ButtonText,
@@ -17,7 +17,7 @@ import LoadDetailsPopup from './ListModal';
 
 
 const LoadDetails = () => {
-  
+  const [isLoading, setIsLoading] = useState(false);
   const [topLoads, setTopLoads] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -47,6 +47,7 @@ const LoadDetails = () => {
   
   useEffect(() => {
     const fetchTopLoads = async () => {
+      setIsLoading(true);
       const apiUrl = `${VITE_API_URL}/loadDetails`;
       const response = await fetch(apiUrl);
       const data = await response.json();
@@ -55,7 +56,8 @@ const LoadDetails = () => {
      
 
       // Take the top 3 loads
-      setTopLoads(data.slice(0, 12));
+      setTopLoads(data.slice(0, 15));
+      setIsLoading(false);
     };
 
     fetchTopLoads();
@@ -81,8 +83,30 @@ const filteredLoads = topLoads.filter(item => {
     );
   };
   return (
-    <View>
-      <Select onValueChange={handleSelectValueChange}>
+    <GluestackUIProvider config={config}>
+    <View >
+      
+    
+      <Input
+  variant="outline"
+  size="md"
+  isDisabled={false}
+  isInvalid={false}
+  isReadOnly={false}
+  // onChangeText={handleSearchSelectChange}
+>
+<InputSlot pl="$3">
+    <InputIcon as={SearchIcon} />
+  </InputSlot>
+  <InputField placeholder="Search Loads" />
+</Input>
+
+   
+      <Divider my="$0.5" />
+      <Heading size="xl" p="$4" pb="$3">
+    Assigned Loads
+    </Heading>
+    <Select onValueChange={handleSelectValueChange}>
         <SelectTrigger variant="outline" size="md">
           <SelectInput placeholder="Select status" />
           <SelectIcon >
@@ -100,42 +124,27 @@ const filteredLoads = topLoads.filter(item => {
           </SelectContent>
         </SelectPortal>
       </Select>
-      <Input
-  variant="outline"
-  size="md"
-  isDisabled={false}
-  isInvalid={false}
-  isReadOnly={false}
-  // onChangeText={handleSearchSelectChange}
->
-<InputSlot pl="$3">
-    <InputIcon as={SearchIcon} />
-  </InputSlot>
-  <InputField placeholder="Search Loads" />
-</Input>
-<Divider my="$0.5" />
-   
-      <Divider my="$0.5" />
-      <Heading size="xl" p="$4" pb="$3">
-    Assigned Loads
-    </Heading>
-      <Card size="md"  m="$3">
-     
+      
+        
+      {isLoading ? (
+            <Spinner size="large" color="$indigo600" /> // Show spinner when loading
+          ) : (
      
       <FlatList
-    data={filteredLoads}
-    renderItem={( { item }: { item: any } ) => (
-      <TouchableOpacity onPress={() => handleItemPress(item)}>
-      <Box
-        borderBottomWidth="$1"
-        borderColor="$trueGray800"
-        $dark-borderColor="$trueGray100"
-        $base-pl={0}
-        $base-pr={0}
-        $sm-pl="$4"
-        $sm-pr="$5"
-        py="$2"
-      >
+      style={{marginBottom: 150}}
+        data={filteredLoads}
+        renderItem={( { item }: { item: any } ) => (
+          <TouchableOpacity onPress={() => handleItemPress(item)}>
+            <Box
+              borderBottomWidth="$1"
+              borderColor="$trueGray800"
+              $dark-borderColor="$trueGray100"
+              $base-pl={0}
+              $base-pr={0}
+              $sm-pl="$4"
+              $sm-pr="$5"
+              py="$2"
+            >
         <HStack space="md" justifyContent="space-between">
          
           <VStack>
@@ -164,18 +173,11 @@ const filteredLoads = topLoads.filter(item => {
     )}
     keyExtractor={item => item._id || item.id}
   />
-      </Card>
+  )}
+  
       
-      {/* <FlatList
-        data={topLoads}
-        renderItem={renderItem}
-        keyExtractor={item => item._id || item.id} // Replace with unique identifier for each load
-        horizontal={false} // Display cards horizontally
-        showsHorizontalScrollIndicator={false} // Hide scroll indicator
-        
-      />
-      </Card>
-       </GluestackUIProvider> */}
+      
+   
  {popupVisible && (
         <LoadDetailsPopup
           isVisible={popupVisible}
@@ -183,10 +185,11 @@ const filteredLoads = topLoads.filter(item => {
           selectedItem={selectedItem}
         />
       )}
-{/* //old cut code here */}
+
 
 
   </View>
+  </GluestackUIProvider>
   );
 };
 

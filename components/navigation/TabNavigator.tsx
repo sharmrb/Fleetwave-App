@@ -18,6 +18,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Load Detail" component={LoadDetails} />
         <Tab.Screen name="Expenses" component={Expenses} />
     </Tab.Navigator>
+    
   );
 };
 
