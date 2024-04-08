@@ -4,6 +4,7 @@ import {  View, TouchableOpacity, Linking } from 'react-native';
 import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading, Text, Button, ButtonText, Divider, ModalContent, CloseIcon, Icon, ModalBackdrop, FlatList, HStack, Box, AddIcon, ButtonIcon, GluestackUIProvider } from '@gluestack-ui/themed';
 import DocumentScanner from 'react-native-document-scanner-plugin';
 import { config } from '@gluestack-ui/config';
+import * as ImagePicker from 'expo-image-picker';
 
 interface LoadDetailsPopupProps {
   isVisible: boolean;
@@ -29,6 +30,23 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     ['Delivery Location', selectedItem.deliveryLocation, true],
     ['Comments', selectedItem.comments],
   ];
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const [scannedImage, setScannedImage] = useState(null);
   const scanDocument = async () => {
@@ -66,6 +84,37 @@ const uploadDocument = async () => {
   } catch (error) {
       console.error('Error uploading document:', error);
       // Handle error
+  }
+};
+const uploadDocument2 = async () => {
+
+  try {
+    // Request permission to access the device's image library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    // If permission is granted, launch the image picker
+    if (permissionResult.granted === false) {
+      console.log('Permission to access media library is required');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+    
+    // Check if the user canceled the image picker
+    if (pickerResult.cancelled === true) {
+      console.log('Image picker canceled');
+      return;
+    }
+
+    // Get the selected image URI
+    const selectedImageUri = pickerResult.uri;
+
+    // Now you can handle the selected image, such as uploading it to your backend
+    console.log('Selected image URI:', selectedImageUri);
+
+  } catch (error) {
+    console.error('Error uploading document:', error);
+    // Handle error
   }
 };
 
@@ -140,11 +189,16 @@ const uploadDocument = async () => {
               }}
               keyExtractor={(item, index) => `${item[0]}-${index}`}
           />
-          <Button  size="md"
-                   variant="outline"
-                   action="positive"
-                  onClick={() => uploadDocument()}>
-                     <ButtonText>Add Document</ButtonText>
+          
+
+                  <Button
+                    size="md"
+                    variant="outline"
+                    action="positive"
+                    onPress={uploadDocument2}
+                    
+                  >
+                    <ButtonText>Add Document</ButtonText>
                     <ButtonIcon as={AddIcon} />
                   </Button>
           </ModalBody>

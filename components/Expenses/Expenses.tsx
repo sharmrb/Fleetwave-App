@@ -98,13 +98,29 @@ fetchExpenses();
 };
 
 const handleRepairSubmit = async () => {
+   // Parse the user-entered date string (assuming it's in MM/DD/YYYY format)
+ const userEnteredDateParts1 = repairData.repairDate.split('/');
+ const month1 = parseInt(userEnteredDateParts1[0]);
+ const day1 = parseInt(userEnteredDateParts1[1]);
+ const year1 = parseInt(userEnteredDateParts1[2]);
+ const userEnteredDate1 = new Date(year1, month1 - 1, day1);
+
+ // Check if the parsed date is valid
+ if (isNaN(userEnteredDate1.getTime())) {
+   console.error('Invalid date format:', repairData.repairDate);
+   return;
+ }
+
+ // Format the date into the desired format (YYYY-MM-DD)
+ const formattedDate1 = `${userEnteredDate1.getFullYear()}-${String(userEnteredDate1.getMonth() + 1).padStart(2, '0')}-${String(userEnteredDate1.getDate()).padStart(2, '0')}T13:00:00.000Z`;
+console.log(formattedDate1);
   try {
     const response = await fetch(`${VITE_API_URL}/repairs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(repairData),
+      body: JSON.stringify({ ...repairData, repairDate: formattedDate1 }), 
     });
 
     if (!response.ok) {
@@ -394,36 +410,45 @@ const fetchExpenses = async () => {
           <InputSlot pl="$3">
     <InputIcon as={InfoIcon} />
   </InputSlot>
-            <InputField type="text" placeholder='Repair Name'/>
+            <InputField type="text" placeholder='Repair Name' value={repairData.repair}
+            onChangeText={(text) => setRepairData({ ...repairData, repair: text })}/>
           </Input>
         </VStack>
         <VStack space="xs">
           
           <Input>
-            <InputField type="text" placeholder='Repair cost'/>
+            <InputField type="text" placeholder='Repair cost' value={repairData.repairCost} 
+            onChangeText={(text)=>setRepairData({...repairData,repairCost:text})}/>
           </Input>
         </VStack>
         <VStack space="xs">
           
-          <Select>
-    <SelectTrigger variant="outline" size="md">
-      <SelectInput placeholder="Select Truck" />
-      <SelectIcon mr="$3">
-        <Icon as={ChevronDownIcon} />
-      </SelectIcon>
-    </SelectTrigger>
-    <SelectPortal>
-      <SelectBackdrop />
-      <SelectContent>
-      {trucks.map(truck => {
-    
-    return (
-      <SelectItem key={truck._id} label={truck.truckNumber} value={truck.truckNumber} />
-    );
-  })}
-      </SelectContent>
-    </SelectPortal>
-  </Select>
+        <Select
+                 value={repairData.truckObject} // Set the value of the selected truck
+                 onValueChange={(value) => setRepairData({ ...repairData, truckObject: value })} >
+          <SelectTrigger variant="outline" size="md">
+            <SelectInput placeholder="Select Truck" />
+            <SelectIcon mr="$3">
+              <Icon as={ChevronDownIcon} />
+            </SelectIcon>
+          </SelectTrigger>
+          <SelectPortal>
+            <SelectBackdrop />
+            <SelectContent>
+            {trucks.map(truck => {
+        
+          return (
+            <SelectItem
+          key={truck._id}
+          label={truck.truckNumber}
+          value={truck.truckNumber} // Use truck._id as value
+           // Update fuelData with truck._id
+        />
+          );
+        })}
+            </SelectContent>
+          </SelectPortal>
+        </Select>
   </VStack>
         <VStack space="xs">
           
@@ -431,7 +456,8 @@ const fetchExpenses = async () => {
           <InputSlot pl="$3">
     <InputIcon as={CalendarDaysIcon} />
   </InputSlot>
-            <InputField type="text" placeholder='Date (MM/DD/YYYY) Format'/>
+  <InputField type="text" placeholder='Date (MM/DD/YYYY) Format'
+            onChangeText={(text) => setRepairData({ ...repairData, repairDate: text })}/>
           </Input>
         </VStack>
         <Button

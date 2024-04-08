@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon} from '@gluestack-ui/themed';
+import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, ScrollView, SafeAreaView} from '@gluestack-ui/themed';
 
 import {
   Button,
@@ -56,7 +56,7 @@ const LoadDetails = () => {
      
 
       // Take the top 3 loads
-      setTopLoads(data.slice(0, 12));
+      setTopLoads(data.slice(0, 15));
       setIsLoading(false);
     };
 
@@ -84,7 +84,8 @@ const filteredLoads = topLoads.filter(item => {
   };
   return (
     <GluestackUIProvider config={config}>
-    <View>
+    <View >
+      
     
       <Input
   variant="outline"
@@ -123,12 +124,14 @@ const filteredLoads = topLoads.filter(item => {
           </SelectContent>
         </SelectPortal>
       </Select>
-      <Card size="md"  m="$4">
+      
+        
       {isLoading ? (
             <Spinner size="large" color="$indigo600" /> // Show spinner when loading
           ) : (
      
       <FlatList
+      style={{marginBottom: 150}}
         data={filteredLoads}
         renderItem={( { item }: { item: any } ) => (
           <TouchableOpacity onPress={() => handleItemPress(item)}>
@@ -171,7 +174,8 @@ const filteredLoads = topLoads.filter(item => {
     keyExtractor={item => item._id || item.id}
   />
   )}
-      </Card>
+  
+      
       
    
  {popupVisible && (

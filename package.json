@@ -32,7 +32,8 @@
     "react-native-reanimated-table": "^0.0.2",
     "react-native-svg": "^14.1.0",
     "react-native-web": "~0.19.6",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "expo-image-picker": "~14.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
