@@ -4,13 +4,17 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
-import { SafeAreaView, StyleSheet, Text } from "react-native";
+import { LogBox, SafeAreaView, StyleSheet, Text } from "react-native";
 import { EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY } from '@env';
 import Constants from "expo-constants";
 
 
+import { YellowBox } from 'react-native';
 
+LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+LogBox.ignoreLogs(['Error uploading document: [TypeError: Cannot convert null value to object]']);
 
+ LogBox.ignoreLogs(['Warning: ...']);
 
 // Import your components here
 import TabNavigator from './components/navigation/TabNavigator';

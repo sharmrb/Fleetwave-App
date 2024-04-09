@@ -103,7 +103,7 @@ const filteredLoads = topLoads.filter(item => {
 
    
       <Divider my="$0.5" />
-      <Heading size="xl" p="$4" pb="$3">
+      <Heading size="xl" p="$4" pb="$3" alignSelf='center'>
     Assigned Loads
     </Heading>
     <Select onValueChange={handleSelectValueChange}>
@@ -117,10 +117,10 @@ const filteredLoads = topLoads.filter(item => {
           <SelectBackdrop />
           <SelectContent>
           <SelectItem label="All" value="All" />
-            <SelectItem label="Todo" value="To-Do" />
-            <SelectItem label="In-progress" value="In Progress" />
-            <SelectItem label="Completed" value="Completed" />
-            <SelectItem label="Older" value="older" />
+            <SelectItem label="Todo" value="To-Do" bgColor='$rose500'/>
+            <SelectItem label="In-progress" value="In Progress" bgColor='$yellow300' />
+            <SelectItem label="Completed" value="Completed" bgColor='$lime300' />
+            <SelectItem label="Older" value="older"  />
           </SelectContent>
         </SelectPortal>
       </Select>
@@ -131,6 +131,7 @@ const filteredLoads = topLoads.filter(item => {
           ) : (
      
       <FlatList
+      bgColor='$trueGray200'
       style={{marginBottom: 150, padding: 10}}
         data={filteredLoads}
         renderItem={( { item }: { item: any } ) => (
@@ -156,7 +157,7 @@ const filteredLoads = topLoads.filter(item => {
              Load Number: {item.loadNumber}
             </Text>
             <Text color="$coolGray600" $dark-color="$warmGray200">
-             Pickup Location- {item.pickupLocation.split(',')[0].split(',')[0]}
+             Pickup Location- {item.pickupLocation.split(',')[0].split(',')[0].substring(0, 20)}
             </Text>
           </VStack>
           <Text

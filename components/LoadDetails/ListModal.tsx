@@ -22,14 +22,14 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     return null;
   }
   const dataToShow = [
-    ['Load Number', selectedItem.loadNumber],
-    ['Truck', selectedItem.truckObject],
-    ['Trailer', selectedItem.trailerObject],
-    ['Driver', selectedItem.driverObject],
-    ['Pickup Time', selectedItem.pickupTime], 
-    ['Pickup Location', selectedItem.pickupLocation, true],
-    ['Delivery Location', selectedItem.deliveryLocation, true],
-    ['Comments', selectedItem.comments],
+    ['Load Number', selectedItem.loadNumber,false],
+    ['Truck', selectedItem.truckObject,false],
+    ['Trailer', selectedItem.trailerObject,false],
+    ['Driver', selectedItem.driverObject,false],
+    ['Pickup Time', selectedItem.pickupTime,false],
+    ['Pickup ', selectedItem.pickupLocation, true],
+    ['Delivery ', selectedItem.deliveryLocation, true],
+    ['Comments', selectedItem.comments,false],
   ];
   const [image, setImage] = useState(null);
 
@@ -172,9 +172,9 @@ const uploadDocument2 = async () => {
         
          <FlatList
           data={dataToShow}
-          renderItem={({ item }: { item: [string, any] }) => {
-            const [key, value] = item;
-            const isLocation = false; 
+          renderItem={({ item }: { item: [string, any, boolean] }) => {
+            const [key, value, isLocation] = item;
+           
             return (
               <Box
                 borderBottomWidth="$1"
@@ -191,19 +191,25 @@ const uploadDocument2 = async () => {
               color="$coolGray800"
               fontWeight="$bold"
               $dark-color="$warmGray100"
+              style={{ flexWrap: 'wrap' }}
             >
               {key}
             </Text>
             {isLocation ? (
-              <TouchableOpacity onPress={() => Linking.openURL(`https://maps.google.com/maps?q=${encodeURIComponent(value)}`)}>
-        
+             <TouchableOpacity
+             onPress={() => {
+               console.log('Link pressed:', value);
+               Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`);
+             }}
+           >
+           
                 <Text
-                  fontSize="$xs"
-                  color="$coolGray800"
+                  fontSize="$sm"
+                  color="$info800"
                   alignSelf="flex-start"
                   $dark-color="$warmGray100"
                 >
-                  {value}
+                  {value} 
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -229,6 +235,7 @@ const uploadDocument2 = async () => {
                     variant="outline"
                     action="positive"
                     onPress={uploadDocument2}
+                    marginTop={20}
                     
                   >
                     <ButtonText>Add Document</ButtonText>

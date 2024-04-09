@@ -21,10 +21,15 @@ const handleLogout = async () => {
     
     <>
     {/* <HeaderComponent navigation={{}} route={{}} options={{}} /> */}
-    <Tab.Navigator>
+    <Tab.Navigator >
+    
       {/* <Tab.Screen name="Home" component={StackNavigator} /> */}
       {/* <Tab.Screen name="Loads" component={LoadsScreen} /> */}
       <Tab.Screen name="Load Detail" component={LoadDetails} options={{
+        tabBarIconStyle: { display: "none" },
+        tabBarLabelStyle: {
+          fontSize: 12,
+        },
           headerTitle: "Load Details",
           headerRight: () => (
            <Button
@@ -38,6 +43,10 @@ const handleLogout = async () => {
           ),
         }}/>
       <Tab.Screen name="Expenses" component={Expenses} options={{
+        tabBarIconStyle: { display: "none" },
+        tabBarLabelStyle: {
+          fontSize: 12,
+        },
           headerTitle: "Expenses",
           headerRight: () => (
            <Button

@@ -37,8 +37,9 @@ export default function SignInScreen() {
   };
   return (
     <GluestackUIProvider config={config}>   
+
     
-    <View>
+    <View  >
     <FormControl
     p="$4"
     borderWidth="$1"
@@ -48,19 +49,34 @@ export default function SignInScreen() {
     $dark-borderRadius="$lg"
     $dark-borderColor="$borderDark800"
     marginTop={200}
+    padding={20}
   >
-    <Image
+ <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+ 
+
+</View>
+
+<VStack alignItems="center">
+
+  <Image style={{ width: 100, height: 100 , marginBottom: 20}}
     alt="Logo"
-  size="md"
-  borderRadius="$md"
-  source={{
-    uri: "https://i.ibb.co/RHtfSDb/android-chrome-192x192.png[/img][/url]co/SvHbx3y",
-  }}
-/>
+    size="md"
+    borderRadius="$md"
+    source={{
+      uri: "https://i.ibb.co/RHtfSDb/android-chrome-192x192.png[/img][/url]co/SvHbx3y",
+    }}
+  />
+
+
+</VStack>
+<VStack alignItems="center" marginBottom={20}>
+<Heading>
+    
+    <Heading color="$indigo400">Welcome to Fleetwave Driver App</Heading>
+  </Heading>
+</VStack>
         <VStack space="xl">
-        <Heading color="$text900" lineHeight="$md" >
-          Login
-        </Heading>
+        
         <VStack space="xs">
           <Text color="$text500" lineHeight="$xs">
             Email
@@ -99,6 +115,7 @@ export default function SignInScreen() {
 
     
     </View>
+    
     </GluestackUIProvider>
   );
 }
