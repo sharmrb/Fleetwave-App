@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {  TextInput, TouchableOpacity, View } from "react-native";
 import { useSignIn } from "@clerk/clerk-expo";
-import { Text, Button, ButtonText, FormControl, Heading, Input, InputField, InputSlot, VStack, EyeIcon, EyeOffIcon, InputIcon, GluestackUIProvider } from "@gluestack-ui/themed";
+import { Text, Button, ButtonText, FormControl, Heading, Input, InputField, InputSlot, VStack, EyeIcon, EyeOffIcon, InputIcon, GluestackUIProvider, Image } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";
 
  
@@ -47,9 +47,18 @@ export default function SignInScreen() {
     $dark-borderWidth="$1"
     $dark-borderRadius="$lg"
     $dark-borderColor="$borderDark800"
+    marginTop={200}
   >
+    <Image
+    alt="Logo"
+  size="md"
+  borderRadius="$md"
+  source={{
+    uri: "https://i.ibb.co/RHtfSDb/android-chrome-192x192.png[/img][/url]co/SvHbx3y",
+  }}
+/>
         <VStack space="xl">
-        <Heading color="$text900" lineHeight="$md">
+        <Heading color="$text900" lineHeight="$md" >
           Login
         </Heading>
         <VStack space="xs">

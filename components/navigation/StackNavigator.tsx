@@ -13,7 +13,9 @@ const StackNavigator = () => {
       screenOptions={{
         header: ({ navigation, route, options }) => (
           <HeaderComponent navigation={navigation} route={route} options={options} />
+          
         ),
+        
       }}
     >
       <Stack.Screen name="Tabs" component={TabNavigator} />

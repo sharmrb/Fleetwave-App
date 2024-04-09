@@ -2,23 +2,56 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StackNavigator from './StackNavigator';
-// import LoadsScreen from '../screens/LoadsScreen';
-// import ExpensesScreen from '../screens/ExpensesScreen';
 import LoadDetails from '../LoadDetails/LoadDetails';
 import Expenses from '../Expenses/Expenses';
+import HeaderComponent from '../HeaderComponent'; 
+import { ButtonText, Button } from '@gluestack-ui/themed';
+import { useAuth } from '@clerk/clerk-expo';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+
+  const { signOut } = useAuth();
+
+const handleLogout = async () => {
+  await signOut();
+};
   return (
+    
+    <>
+    {/* <HeaderComponent navigation={{}} route={{}} options={{}} /> */}
     <Tab.Navigator>
       {/* <Tab.Screen name="Home" component={StackNavigator} /> */}
-      {/* <Tab.Screen name="Loads" component={LoadsScreen} />
-      <Tab.Screen name="Expenses" component={ExpensesScreen} /> */}
-      <Tab.Screen name="Load Detail" component={LoadDetails} />
-        <Tab.Screen name="Expenses" component={Expenses} />
+      {/* <Tab.Screen name="Loads" component={LoadsScreen} /> */}
+      <Tab.Screen name="Load Detail" component={LoadDetails} options={{
+          headerTitle: "Load Details",
+          headerRight: () => (
+           <Button
+           style={{ marginRight: 5 }}
+           onPress={handleLogout}
+           size="sm"
+  variant="outline"
+  action="negative">
+            <ButtonText>Logout</ButtonText>
+           </Button>
+          ),
+        }}/>
+      <Tab.Screen name="Expenses" component={Expenses} options={{
+          headerTitle: "Expenses",
+          headerRight: () => (
+           <Button
+           style={{ marginRight: 5 }}
+           onPress={handleLogout}
+           size="sm"
+  variant="outline"
+  action="negative">
+            <ButtonText>Logout</ButtonText>
+           </Button>
+          ),
+        }} />
     </Tab.Navigator>
-    
+    </>
   );
 };
 

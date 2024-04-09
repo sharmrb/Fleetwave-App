@@ -5,6 +5,7 @@ import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading,
 import DocumentScanner from 'react-native-document-scanner-plugin';
 import { config } from '@gluestack-ui/config';
 import * as ImagePicker from 'expo-image-picker';
+import { VITE_API_URL } from '@env'
 
 interface LoadDetailsPopupProps {
   isVisible: boolean;
@@ -48,7 +49,7 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     }
   };
 
-  const [scannedImage, setScannedImage] = useState(null);
+  const [ annedImage, setScannedImage] = useState(null);
   const scanDocument = async () => {
     try {
         const { scannedImages, status } = await DocumentScanner.scanDocument();
@@ -65,27 +66,47 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     }
 };
 
-const uploadDocument = async () => {
+const updateLoadDocuments = async (loadId, newDocuments) => {
+  //console.log(newDocuments)
   try {
-      // Send scannedImage to backend for upload
-      // Make sure to handle file upload in your backend
-      // You can use fetch or axios to make the HTTP request
-      console.log('Uploading document:', scannedImage);
-      // Example fetch request
-      // const response = await fetch('backend-upload-url', {
-      //     method: 'POST',
-      //     body: scannedImage,
-      //     headers: {
-      //         'Content-Type': 'image/jpeg', // Adjust content type as per your requirement
-      //     },
-      // });
-      // const data = await response.json();
-      // Handle response from backend if necessary
+    // Fetch existing load details
+    const response = await fetch(`${VITE_API_URL}/loadDetails/${loadId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch existing load details');
+    }
+    const existingLoad = await response.json();
+
+    // Combine existing documents with new documents
+    const updatedDocuments = [...(existingLoad.documents || []), ...newDocuments];
+
+
+    // Make PATCH request to update load details with the combined documents
+    const updateResponse = await fetch(`${VITE_API_URL}/loadDetails/${loadId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ documents: updatedDocuments }),
+    });
+
+    // Check if request was successful
+    if (!updateResponse.ok) {
+      
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    // Handle successful response
+    const responseData = await updateResponse.json();
+    console.log('Load details updated successfully:', responseData);
+    // Optionally, you can update your app state or UI to reflect the changes
   } catch (error) {
-      console.error('Error uploading document:', error);
-      // Handle error
+    // Handle error
+    console.error('Error updating load details:', error.message);
+    // Optionally, you can show an error message to the user
   }
 };
+
 const uploadDocument2 = async () => {
 
   try {
@@ -98,16 +119,28 @@ const uploadDocument2 = async () => {
       return;
     }
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync();
-    
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!pickerResult.canceled) {
+      // If user selected new documents, call the function to update load details
+      console.log(pickerResult.assets[0])
+      console.log("Calling updateLoadDocuments ")
+      console.log("passing"+selectedItem.loadNumber)
+      updateLoadDocuments( selectedItem._id, [pickerResult.assets[0]]);
+    }
     // Check if the user canceled the image picker
     if (pickerResult.cancelled === true) {
       console.log('Image picker canceled');
       return;
     }
 
+
     // Get the selected image URI
-    const selectedImageUri = pickerResult.uri;
+    const selectedImageUri = pickerResult.assets[0].uri;
 
     // Now you can handle the selected image, such as uploading it to your backend
     console.log('Selected image URI:', selectedImageUri);

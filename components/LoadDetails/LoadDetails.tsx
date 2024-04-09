@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, ScrollView, SafeAreaView} from '@gluestack-ui/themed';
+import {Spinner, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectItem, Divider, GluestackUIProvider, InputField ,FlatList, Heading, Box, HStack, VStack,Text, Modal, ModalFooter, ModalBackdrop, Icon, ModalContent, ModalHeader, ModalCloseButton, CloseIcon, ModalBody, InputIcon, SearchIcon, InputSlot, ChevronDownIcon, SafeAreaView} from '@gluestack-ui/themed';
 
 import {
   Button,
@@ -56,7 +56,7 @@ const LoadDetails = () => {
      
 
       // Take the top 3 loads
-      setTopLoads(data.slice(0, 15));
+      setTopLoads(data.slice(0, 70));
       setIsLoading(false);
     };
 
@@ -88,15 +88,15 @@ const filteredLoads = topLoads.filter(item => {
       
     
       <Input
-  variant="outline"
-  size="md"
-  isDisabled={false}
-  isInvalid={false}
-  isReadOnly={false}
-  // onChangeText={handleSearchSelectChange}
->
+        variant="outline"
+        size="md"
+        isDisabled={false}
+        isInvalid={false}
+        isReadOnly={false}
+        // onChangeText={handleSearchSelectChange}
+      >
 <InputSlot pl="$3">
-    <InputIcon as={SearchIcon} />
+    <InputIcon as={SearchIcon} /> 
   </InputSlot>
   <InputField placeholder="Search Loads" />
 </Input>
@@ -131,7 +131,7 @@ const filteredLoads = topLoads.filter(item => {
           ) : (
      
       <FlatList
-      style={{marginBottom: 150}}
+      style={{marginBottom: 150, padding: 10}}
         data={filteredLoads}
         renderItem={( { item }: { item: any } ) => (
           <TouchableOpacity onPress={() => handleItemPress(item)}>
