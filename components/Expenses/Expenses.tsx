@@ -228,23 +228,24 @@ const fetchExpenses = async () => {
           </TouchableOpacity>
         )}
       > */}
-      <Menu
+      <Menu marginTop={-90}
+      marginLeft={100}
   placement="bottom"
   defaultIsOpen={false}
   trigger={({ ...triggerProps }) => {
     return (
-      <Button {...triggerProps}>
+      <Button marginTop={20}{...triggerProps}>
         <ButtonText>Add Expense</ButtonText>
         <ButtonIcon as={AddIcon} />
       </Button>
     )
   }}
       >
-        <MenuItem textValue='Add Fuel' onPress={() => handleOpenFuelModal()}>
+        <MenuItem textValue='Add Fuel'  bgColor='$success100' onPress={() => handleOpenFuelModal()}>
          <MenuItemLabel>Add Fuel</MenuItemLabel>
-          
+         
         </MenuItem>
-        <MenuItem textValue="Add Repair" onPress={() => handleOpenRepairModal()}>
+        <MenuItem textValue="Add Repair"  bgColor='$error100' onPress={() => handleOpenRepairModal()}>
         <MenuItemLabel>Add Repair</MenuItemLabel>
         
         </MenuItem>

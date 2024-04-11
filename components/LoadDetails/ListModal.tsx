@@ -5,6 +5,7 @@ import {  Modal, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Heading,
 import DocumentScanner from 'react-native-document-scanner-plugin';
 import { config } from '@gluestack-ui/config';
 import * as ImagePicker from 'expo-image-picker';
+import { VITE_API_URL } from '@env'
 
 interface LoadDetailsPopupProps {
   isVisible: boolean;
@@ -21,14 +22,14 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     return null;
   }
   const dataToShow = [
-    ['Load Number', selectedItem.loadNumber],
-    ['Truck', selectedItem.truckObject],
-    ['Trailer', selectedItem.trailerObject],
-    ['Driver', selectedItem.driverObject],
-    ['Pickup Time', selectedItem.pickupTime], 
-    ['Pickup Location', selectedItem.pickupLocation, true],
-    ['Delivery Location', selectedItem.deliveryLocation, true],
-    ['Comments', selectedItem.comments],
+    ['Load Number', selectedItem.loadNumber,false],
+    ['Truck', selectedItem.truckObject,false],
+    ['Trailer', selectedItem.trailerObject,false],
+    ['Driver', selectedItem.driverObject,false],
+    ['Pickup Time', selectedItem.pickupTime,false],
+    ['Pickup ', selectedItem.pickupLocation, true],
+    ['Delivery ', selectedItem.deliveryLocation, true],
+    ['Comments', selectedItem.comments,false],
   ];
   const [image, setImage] = useState(null);
 
@@ -48,7 +49,7 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     }
   };
 
-  const [scannedImage, setScannedImage] = useState(null);
+  const [ annedImage, setScannedImage] = useState(null);
   const scanDocument = async () => {
     try {
         const { scannedImages, status } = await DocumentScanner.scanDocument();
@@ -65,27 +66,47 @@ const LoadDetailsPopup: React.FC<LoadDetailsPopupProps> = ({
     }
 };
 
-const uploadDocument = async () => {
+const updateLoadDocuments = async (loadId, newDocuments) => {
+  //console.log(newDocuments)
   try {
-      // Send scannedImage to backend for upload
-      // Make sure to handle file upload in your backend
-      // You can use fetch or axios to make the HTTP request
-      console.log('Uploading document:', scannedImage);
-      // Example fetch request
-      // const response = await fetch('backend-upload-url', {
-      //     method: 'POST',
-      //     body: scannedImage,
-      //     headers: {
-      //         'Content-Type': 'image/jpeg', // Adjust content type as per your requirement
-      //     },
-      // });
-      // const data = await response.json();
-      // Handle response from backend if necessary
+    // Fetch existing load details
+    const response = await fetch(`${VITE_API_URL}/loadDetails/${loadId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch existing load details');
+    }
+    const existingLoad = await response.json();
+
+    // Combine existing documents with new documents
+    const updatedDocuments = [...(existingLoad.documents || []), ...newDocuments];
+
+
+    // Make PATCH request to update load details with the combined documents
+    const updateResponse = await fetch(`${VITE_API_URL}/loadDetails/${loadId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ documents: updatedDocuments }),
+    });
+
+    // Check if request was successful
+    if (!updateResponse.ok) {
+      
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    // Handle successful response
+    const responseData = await updateResponse.json();
+    console.log('Load details updated successfully:', responseData);
+    // Optionally, you can update your app state or UI to reflect the changes
   } catch (error) {
-      console.error('Error uploading document:', error);
-      // Handle error
+    // Handle error
+    console.error('Error updating load details:', error.message);
+    // Optionally, you can show an error message to the user
   }
 };
+
 const uploadDocument2 = async () => {
 
   try {
@@ -98,16 +119,28 @@ const uploadDocument2 = async () => {
       return;
     }
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync();
-    
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!pickerResult.canceled) {
+      // If user selected new documents, call the function to update load details
+      console.log(pickerResult.assets[0])
+      console.log("Calling updateLoadDocuments ")
+      console.log("passing"+selectedItem.loadNumber)
+      updateLoadDocuments( selectedItem._id, [pickerResult.assets[0]]);
+    }
     // Check if the user canceled the image picker
     if (pickerResult.cancelled === true) {
       console.log('Image picker canceled');
       return;
     }
 
+
     // Get the selected image URI
-    const selectedImageUri = pickerResult.uri;
+    const selectedImageUri = pickerResult.assets[0].uri;
 
     // Now you can handle the selected image, such as uploading it to your backend
     console.log('Selected image URI:', selectedImageUri);
@@ -139,9 +172,9 @@ const uploadDocument2 = async () => {
         
          <FlatList
           data={dataToShow}
-          renderItem={({ item }: { item: [string, any] }) => {
-            const [key, value] = item;
-            const isLocation = false; 
+          renderItem={({ item }: { item: [string, any, boolean] }) => {
+            const [key, value, isLocation] = item;
+           
             return (
               <Box
                 borderBottomWidth="$1"
@@ -158,19 +191,25 @@ const uploadDocument2 = async () => {
               color="$coolGray800"
               fontWeight="$bold"
               $dark-color="$warmGray100"
+              style={{ flexWrap: 'wrap' }}
             >
               {key}
             </Text>
             {isLocation ? (
-              <TouchableOpacity onPress={() => Linking.openURL(`https://maps.google.com/maps?q=${encodeURIComponent(value)}`)}>
-        
+             <TouchableOpacity
+             onPress={() => {
+               console.log('Link pressed:', value);
+               Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`);
+             }}
+           >
+           
                 <Text
-                  fontSize="$xs"
-                  color="$coolGray800"
+                  fontSize="$sm"
+                  color="$info800"
                   alignSelf="flex-start"
                   $dark-color="$warmGray100"
                 >
-                  {value}
+                  {value} 
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -196,6 +235,7 @@ const uploadDocument2 = async () => {
                     variant="outline"
                     action="positive"
                     onPress={uploadDocument2}
+                    marginTop={20}
                     
                   >
                     <ButtonText>Add Document</ButtonText>
